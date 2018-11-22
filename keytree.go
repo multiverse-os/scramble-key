@@ -1,4 +1,4 @@
-package main
+package scramblekeys
 
 type Tree struct {
 }
