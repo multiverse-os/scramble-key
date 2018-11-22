@@ -5,12 +5,10 @@ import (
 	"encoding/base32"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
-	"lib/atomicio"
-
+	io "github.com/multiverse-os/scramblekeys/atomicio"
 	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/sha3"
 )
@@ -19,17 +17,6 @@ type KeyPair struct {
 	Address    string             `json:address`
 	PublicKey  ed25519.PublicKey  `json:public_key`
 	PrivateKey ed25519.PrivateKey `json:private_key`
-}
-
-func main() {
-	keyPair := GenerateKey()
-	keyFilePath := ".scramble-suit.key"
-
-	encodedKeyFile, _ := keyPair.encodeJSON("  ")
-	fmt.Println("Saving JSON Encoded Key File:")
-	fmt.Println(encodedKeyFile)
-
-	WriteJSONKeyFile(keyFilePath, keyPair)
 }
 
 func WriteJSONKeyFile(keyFilePath string, keyPair KeyPair) {
