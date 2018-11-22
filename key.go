@@ -84,6 +84,10 @@ func (self Key) RSA() string {
 	// TODO: Output a determinically generated SSH compatible RSA key based on any given key
 }
 
+func (self Key) BTC() string {
+	// TODO: Output a determinically generated BTC key based on any given key
+}
+
 func (self Key) JSON() []byte {
 	output, err := json.MarshalIndent(self, "", "  ")
 	if err != nil {
