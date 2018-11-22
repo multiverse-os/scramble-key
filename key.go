@@ -21,13 +21,9 @@ type KeyPair struct {
 
 func WriteJSONKeyFile(keyFilePath string, keyPair KeyPair) {
 	if _, err := os.Stat(keyFilePath); os.IsNotExist(err) {
-		keyFile, _ := safefile.Create(keyFilePath, 0644)
-		defer keyFile.Close()
-
 		encodedKeyFile, _ := keyPair.encodeJSON("  ")
 
-		_, _ = io.WriteString(keyFile, encodedKeyFile)
-		err = keyFile.Commit()
+		err = io.WriteFile(keyFilePath, []byte(encodedKeyFile), 0644)
 		if err != nil {
 			fmt.Println("Error: ", err)
 		} else {
