@@ -23,27 +23,40 @@ type KeyType int
 // By defining specific Session key (think certificate), we can have keys
 // issued for a session that even if hijacked have very limited permissions
 const (
-	Root KeyType = iota
-	Recovery
-	Session
+	RootKey KeyType = iota
+	RecoveryKey
+	SessionKey
 )
 
 type Ring struct {
 	RootKey *Key            `json:"root_key,omitempty"`
 	Keys    map[string]*Key `json:"keys"` // map[Key.Address]*Key
+	// TODO: Make the tree here, hold all relation data here,
+	// and even hold expiry data, which is created by signing
+	// it with a parent key
+	//Expires    time.Time          `json:"expires,omitempty"`
 }
 
 type Key struct {
-	ParentKey  Key                `json:"parent_key,omitempty"`
-	ChildKeys  map[string]Key     `json:"child_keys,omitempty"`
 	Address    string             `json:"address"`
 	PublicKey  ed25519.PublicKey  `json:"public_key"`
 	PrivateKey ed25519.PrivateKey `json:"private_key"`
 	Expires    time.Time          `json:"expires,omitempty"`
 }
 
-func New(seed []byte, expiresAt time.Time) Key {
-	publicKey, privateKey, _ := ed25519.GenerateKey(seed)
+func New(seed []byte) Key {
+	r := bytes.NewReader(seed)
+	publicKey, privateKey, _ := ed25519.GenerateKey(r)
+	return Key{
+		Address:    (GenerateAddress(publicKey)),
+		PublicKey:  publicKey,
+		PrivateKey: privateKey,
+	}
+}
+
+func NewWithExpires(seed []byte, expiresAt time.Time) Key {
+	r := bytes.NewReader(seed)
+	publicKey, privateKey, _ := ed25519.GenerateKey(r)
 	return Key{
 		Address:    (GenerateAddress(publicKey)),
 		PublicKey:  publicKey,
@@ -53,19 +66,19 @@ func New(seed []byte, expiresAt time.Time) Key {
 }
 
 func GenerateKey() Key {
-	return New(nil, nil)
+	return New(nil)
 }
 
-func DeterministicKey(seed []byte) Key {
-	return New(seed, nil)
+func GenerateDeterministicKey(seed []byte) Key {
+	return New(seed)
 }
 
-func SessionKey(expiresAt time.Time) Key {
-	return New(nil, expiresAt)
+func GenerateSessionKey(expiresAt time.Time) Key {
+	return NewWithExpires(nil, expiresAt)
 }
 
 func (self Key) DerivativeKey() Key {
-	return New(string(self.PrivateKey), nil)
+	return New(self.PrivateKey)
 }
 
 func (self Key) String() string {
@@ -78,14 +91,17 @@ func (self Key) OnionAddress() string {
 
 func (self Key) PGP() string {
 	// TODO: Output a determinically generated PGP key based on any given key
+	return ""
 }
 
 func (self Key) RSA() string {
 	// TODO: Output a determinically generated SSH compatible RSA key based on any given key
+	return ""
 }
 
 func (self Key) BTC() string {
 	// TODO: Output a determinically generated BTC key based on any given key
+	return ""
 }
 
 func (self Key) JSON() []byte {

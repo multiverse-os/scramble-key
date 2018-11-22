@@ -3,6 +3,8 @@ package scramblekeys
 import (
 	"errors"
 	"os"
+
+	io "github.com/multiverse-os/scramblekeys/atomicio"
 )
 
 type KeyFormat int
