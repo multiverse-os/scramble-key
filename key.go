@@ -13,10 +13,12 @@ import (
 
 // Development NOTES
 // TODO:
-//   * Add the ability to generate a key form another key deterministically
-//   * Be able to verify child keys against any parent key
-//   * Use merkle tree to have piece-meal verification against the merkle root
-//   * Patricia tree based key lookup
+// * Build in subkey generation that are maintained in a merkle tree stored in
+// the root key.
+// * Add the ability to create certificates from this key, and generate
+// sub-certificates.
+// * Standardized message signign for standard operations on the various keys,
+// sub-keys and certificates.
 
 type KeyType int
 
